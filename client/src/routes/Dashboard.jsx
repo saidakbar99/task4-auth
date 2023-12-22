@@ -1,16 +1,16 @@
 import {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom';
-import { Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'
+import { Form } from 'react-bootstrap'
 import axios from 'axios'
-import moment from 'moment';
+import moment from 'moment'
 import 'moment/locale/en-au'
 
 const Dashboard = () => {
     const [users, setUsers] = useState([])
-    const [isCheckAll, setIsCheckAll] = useState(false);
-    const [isCheck, setIsCheck] = useState([]);
+    const [isCheckAll, setIsCheckAll] = useState(false)
+    const [isCheck, setIsCheck] = useState([])
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const token = sessionStorage.getItem('token')
 
     const getUsers = async (token) => {
@@ -18,61 +18,64 @@ const Dashboard = () => {
             //!Call link
             const response = await axios.get('http://localhost:5000/', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            });
+            })
             setUsers(response.data)
         } catch (e) {
-            console.error('Error message: ', e)
+            console.error('Error fetching users: ', e)
         }
     }
 
     const deleteUser = async () => {
         try {
             //!Call link
-            await axios.post('http://localhost:5000/', { selectedIds: isCheck });
+            await axios.post('http://localhost:5000/', { selectedIds: isCheck })
+            getUsers(token)
         } catch (error) {
-          console.error('Error removing users:', error);
+          console.error('Error removing users:', error)
         }
-    };
+    }
 
     const blockUser = async () => {
         try {
             //!Call link
-            await axios.post('http://localhost:5000/block', { selectedIds: isCheck });
+            await axios.post('http://localhost:5000/block', { selectedIds: isCheck })
+            getUsers(token)
         } catch (error) {
-          console.error('Error removing users:', error);
+          console.error('Error removing users:', error)
         }
-    };
+    }
 
     const unblockUser = async () => {
         try {
             //!Call link
-            await axios.post('http://localhost:5000/unblock', { selectedIds: isCheck });
+            await axios.post('http://localhost:5000/unblock', { selectedIds: isCheck })
+            getUsers(token)
         } catch (error) {
-          console.error('Error removing users:', error);
+          console.error('Error removing users:', error)
         }
-    };
+    }
 
     const handleSelectAll = e => {
-        setIsCheckAll(!isCheckAll);
-        setIsCheck(users.map(user => user._id));
+        setIsCheckAll(!isCheckAll)
+        setIsCheck(users.map(user => user._id))
         if (isCheckAll) {
-          setIsCheck([]);
+          setIsCheck([])
         }
-    };
+    }
 
     const handleCheckbox = e => {
-        const { id, checked } = e.target;
-        setIsCheck([...isCheck, id]);
+        const { id, checked } = e.target
+        setIsCheck([...isCheck, id])
         if (!checked) {
-          setIsCheck(isCheck.filter(item => item !== id));
+          setIsCheck(isCheck.filter(item => item !== id))
         }
-    };
+    }
 
     useEffect(() => {
         if (!token) {
             navigate('/sign_in')
         }
-    }, [token]);
+    }, [token])
 //! REFACTOR useEffects
 //! get users calls two times
     useEffect(() => {
@@ -150,4 +153,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard;
+export default Dashboard

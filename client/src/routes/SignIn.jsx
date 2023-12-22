@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify'
 
 const SignIn = () => {
-    const navigate = useNavigate();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const navigate = useNavigate()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
 
     const handleLogin = async () => {
         try {
@@ -21,7 +21,7 @@ const SignIn = () => {
                 //! call link
                 await axios.post('http://localhost:5000/', { username: username })
                 navigate('/')
-                sessionStorage.setItem('token', token);
+                sessionStorage.setItem('token', token)
             }
             //!REFACTOR DUPLICATE in SIGN_UP
         } catch (e) {
@@ -36,7 +36,7 @@ const SignIn = () => {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
-            });
+            })
         }
     }
 

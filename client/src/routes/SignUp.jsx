@@ -3,11 +3,11 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 const SignUp = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('')
 
     const handleRegister = async () => {
         try {
@@ -25,12 +25,12 @@ const SignUp = () => {
 //! refactor DUPLICATE
             if (token) {
                 navigate('/')
-                sessionStorage.setItem('token', token);
+                sessionStorage.setItem('token', token)
             }
         } catch (e) {
             console.error(e)
         }
-    };
+    }
 
   return (
     <div className="Auth-form-container">
