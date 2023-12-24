@@ -19,21 +19,24 @@ const Dashboard = () => {
     const { store } = useContext(Context);
     const token = localStorage.getItem('token')
 
-
     useEffect(() => {
         getUsers()
 
         if (token) {
             store.checkAuth()
-            console.log('>>>user', store.user.id)
-
         }
     }, [])
+
+    const resetCheckboxes = () => {
+        setIsCheck([])
+        setIsSelectedAll(false)
+    }
 
     const getUsers = async () => {
         try {
             const response = await UserService.fetchUsers(token);
             setUsers(response.data);
+            resetCheckboxes()
         } catch (e) {
             console.error('Error fetching users: ', e)
         }
@@ -42,6 +45,12 @@ const Dashboard = () => {
     const deleteUser = async () => {
         try {
             await UserService.deleteUsers(isCheck)
+
+            if (isCheck.includes(store.user.id)) {
+                await store.logout()
+                    .then(() => navigate('/'))
+            }
+
             getUsers()
         } catch (error) {
             console.error('Error removing users:', error)

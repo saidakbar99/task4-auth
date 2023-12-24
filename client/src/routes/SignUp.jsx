@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
 
 import { Context } from '../index'
 
@@ -13,28 +13,22 @@ const SignUp = () => {
 
     const { store } = useContext(Context)
 
-//     const handleRegister = async () => {
-//         try {
-//             //! call link
-//             const response = await axios.post('http://localhost:5000/sign_up', {
-//                 username: username,
-//                 password: password,
-//                 email: email
-//                 //! call link
-//             }).then(async() => await axios.post('http://localhost:5000/sign_in', {
-//                 username: username,
-//                 password: password
-//             }))
-//             const { token } = response.data
-// //! refactor DUPLICATE
-//             if (token) {
-//                 navigate('/')
-//                 sessionStorage.setItem('token', token)
-//             }
-//         } catch (e) {
-//             console.error(e)
-//         }
-//     }
+    const handleRegister = async () => {
+        const newUser = await store.registration(username, password, email)
+            .then(async () => await store.login(username, password))
+        console.log('>>>', newUser)
+
+        if (newUser?.status === 200) {
+            navigate('/')
+        } else {
+            toast.error('This email/username is already used', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+            })
+        }
+    }
 
   return (
     <div className="Auth-form-container">
@@ -81,7 +75,7 @@ const SignUp = () => {
                     <button
                         type="button"
                         className="btn btn-primary"
-                        onClick={() => store.registration(username, password, email) }
+                        onClick={handleRegister}
                     >
                         Sign up
                     </button>
