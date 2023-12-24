@@ -15,7 +15,7 @@ const SignIn = () => {
         if (event.key === 'Enter') {
             handleLogin();
         }
-      };
+    }
 
     const handleLogin = async () => {
         const isUser = await store.login(username, password)

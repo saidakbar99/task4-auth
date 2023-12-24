@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     const navigate = useNavigate()
     const { store } = useContext(Context);
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('token')
 
     useEffect(() => {
         getUsers()
@@ -60,6 +60,12 @@ const Dashboard = () => {
     const blockUser = async () => {
         try {
             await UserService.blockUsers(isCheck)
+
+            if (isCheck.includes(store.user.id)) {
+                await store.logout()
+                    .then(() => navigate('/'))
+            }
+
             getUsers()
         } catch (error) {
           console.error('Error removing users:', error)
@@ -96,8 +102,8 @@ const Dashboard = () => {
             navigate('/sign_in')
         }
     }, [token])
-//! REFACTOR useEffects
 
+//! REFACTOR useEffects
     return (
         //! DEcompostie table
         <div className='container pt-4'>
@@ -157,7 +163,7 @@ const Dashboard = () => {
                             <td>{user.email}</td>
                             <td>{moment(user.createdAt).format('L')}</td>
                             <td>{moment(user.lastLogin).format('LLL')}</td>
-                            <td className='text-center'>{user.status}</td>
+                            <td className='text-center'>{user.isBlocked ? 'BLOCKED' : 'ACTIVE'}</td>
                         </tr>
                     ))}
                 </tbody>

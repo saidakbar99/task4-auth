@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const UserModel = require('../models/user-model')
 const tokenService = require('./token-service')
 const UserDto = require('../dtos/user-dto')
-
+const ApiError = require('../exceptions/api-error');
 class UserService {
 
     async generateAndSaveToken(user) {
@@ -12,12 +12,12 @@ class UserService {
 
         return { ...tokens, user: userDto}
     }
-
+ 
     async registration(username, password, email) {
         const candidate = await UserModel.findOne({ username })
 
         if (candidate) {
-            throw new Error(`User with ${username} username already exist`)
+            throw ApiError.BadRequest(`User with ${username} username already exist`);
         }
 
         const hashPassword = await bcrypt.hash(password, 3)
@@ -31,7 +31,11 @@ class UserService {
         const isPassEquals = await bcrypt.compare(password, user.password)
 
         if (!user || !isPassEquals) {
-            throw new Error(`Wrong username/password`)
+            throw ApiError.BadRequest('Wrong username/password');
+        }
+
+        if (user.isBlocked) {
+            throw ApiError.BadRequest('This user is blocked');
         }
 
         await UserModel.findOneAndUpdate({username: username}, {lastLogin: Date.now()})
@@ -45,14 +49,14 @@ class UserService {
 
     async refresh(refreshToken) {
         if (!refreshToken) {
-            throw new Error('Unauthorized Error')
+            throw ApiError.UnauthorizedError()
         }
 
         const userData = tokenService.validateRefreshToken(refreshToken)
         const tokenFromDb = await tokenService.findToken(refreshToken)
 
         if (!userData || !tokenFromDb) {
-            throw new Error('Unauthorized Error')
+            throw ApiError.UnauthorizedError()
         }
 
         const user = await UserModel.findById(userData.id)
@@ -69,11 +73,11 @@ class UserService {
     }
 
     async block(selectedIds) {
-        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {"$set":{"status": "BLOCKED"}})
+        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {'$set':{'isBlocked': true}})
     }
 
     async unblock(selectedIds) {
-        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {"$set":{"status": "ACTIVE"}})
+        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {'$set':{'isBlocked': false}})
     }
 }
 

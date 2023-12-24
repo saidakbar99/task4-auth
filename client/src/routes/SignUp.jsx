@@ -13,10 +13,15 @@ const SignUp = () => {
 
     const { store } = useContext(Context)
 
+    const handleEnterPress = (event) => {
+        if (event.key === 'Enter') {
+            handleRegister();
+        }
+    }
+
     const handleRegister = async () => {
         const newUser = await store.registration(username, password, email)
             .then(async () => await store.login(username, password))
-        console.log('>>>', newUser)
 
         if (newUser?.status === 200) {
             navigate('/')
@@ -44,7 +49,9 @@ const SignUp = () => {
                             id="username"
                             name="username"
                             placeholder="Username"
-                            onChange={(e)=>setUsername(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value)}
+                            onKeyDown={handleEnterPress}
+                            autoFocus
                             required
                         />
                     </div>
@@ -56,7 +63,8 @@ const SignUp = () => {
                             id="email"
                             name="email"
                             placeholder="Email address"
-                            onChange={(e)=>setEmail(e.target.value)}
+                            onChange={(e) => setEmail(e.target.value)}
+                            onKeyDown={handleEnterPress}
                             required
                         />
                     </div>
@@ -68,7 +76,8 @@ const SignUp = () => {
                             id="password"
                             name="password"
                             placeholder="Password"
-                            onChange={(e)=>setPassword(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleEnterPress}
                             required
                         />
                     </div>

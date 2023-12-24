@@ -6,7 +6,7 @@ const User = new Schema({
     email: {type: String, unique: true, required: true},
     createdAt: {type: Date, default: Date.now()},
     lastLogin: {type: Date, default: Date.now()},
-    status: {type: String, default: 'ACTIVE'},
+    isBlocked: {type: Boolean, default: false},
 })
 
 module.exports = model('User', User)

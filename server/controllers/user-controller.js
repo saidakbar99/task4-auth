@@ -2,7 +2,7 @@ const userService = require('../service/user-service')
 const { validationResult } = require('express-validator')
 
 class UserController {
-    async registration(req, res) {
+    async registration(req, res, next) {
         try {
             const errors = validationResult(req)
 
@@ -15,79 +15,79 @@ class UserController {
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
             return res.json(userData)
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async login(req, res) {
+    async login(req, res, next) {
         try {
             const { username, password } = req.body
             const userData = await userService.login(username, password)
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
             return res.json(userData)
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async logout(req, res) {
+    async logout(req, res, next) {
         try {
             const { refreshToken } = req.cookies
             const token = await userService.logout(refreshToken)
             res.clearCookie('refreshToken')
             return res.json(token)
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async refresh(req, res) {
+    async refresh(req, res, next) {
         try {
             const { refreshToken } = req.cookies
             const userData = await userService.refresh(refreshToken)
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
             return res.json(userData)
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async blockUser (req, res) {
+    async blockUser (req, res, next) {
         try {
             const { selectedIds } = req.body
             const result = await userService.block(selectedIds)
             return res.json({ message: 'Users status updated', result })
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async unblockUser (req, res) {
+    async unblockUser (req, res, next) {
         try {
             const { selectedIds } = req.body
             const result = await userService.unblock(selectedIds)
             return res.json({ message: 'Users status updated', result })
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async deleteUser (req, res) {
+    async deleteUser (req, res, next) {
         try {
             const { selectedIds } = req.body
             const result = await userService.delete(selectedIds)
             return res.json({ message: 'Users deleted successfully', result })
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 
-    async getUsers(req, res) {
+    async getUsers(req, res, next) {
         try {
             const users = await userService.getAllUsers()
             return res.json(users)
         } catch (e) {
-            console.error(e)
+            next(e)
         }
     }
 }
