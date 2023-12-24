@@ -31,64 +31,71 @@ const SignUp = () => {
     }
 
   return (
-    <div className="Auth-form-container">
-        <form className="Auth-form">
-            <div className="Auth-form-content">
-                <h3 className="Auth-form-title">Sign Up</h3>
-                <div className="form-group mt-3">
-                    <label>Username</label>
-                    <input
-                        type="username"
-                        className="form-control mt-1"
-                        id="username"
-                        name="username"
-                        placeholder="Username"
-                        onChange={(e)=>setUsername(e.target.value)}
-                        required
-                    />
+    <>
+        <div className="Auth-form-container">
+            <form className="Auth-form">
+                <div className="Auth-form-content">
+                    <h3 className="Auth-form-title">Sign Up</h3>
+                    <div className="form-group mt-3">
+                        <label htmlFor='username'>Username</label>
+                        <input
+                            type="username"
+                            className="form-control mt-1"
+                            id="username"
+                            name="username"
+                            placeholder="Username"
+                            onChange={(e)=>setUsername(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group mt-3">
+                        <label htmlFor='email'>Email address</label>
+                        <input
+                            type="email"
+                            className="form-control mt-1"
+                            id="email"
+                            name="email"
+                            placeholder="Email address"
+                            onChange={(e)=>setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group mt-3">
+                        <label htmlFor='password'>Password</label>
+                        <input
+                            type="password"
+                            className="form-control mt-1"
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            onChange={(e)=>setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="d-grid gap-2 mt-3">
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleRegister}
+                        >
+                            Sign up
+                        </button>
+                    </div>
+                    <p className="mt-2">
+                        Already have an account? {' '}
+                        <NavLink to="/sign_in">
+                            Sign in
+                        </NavLink>
+                    </p>
                 </div>
-                <div className="form-group mt-3">
-                    <label>Email address</label>
-                    <input
-                        type="email"
-                        className="form-control mt-1"
-                        id="email-address"
-                        name="email"
-                        placeholder="Email address"
-                        onChange={(e)=>setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group mt-3">
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        className="form-control mt-1"
-                        id="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={(e)=>setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="d-grid gap-2 mt-3">
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={handleRegister}
-                    >
-                        Sign up
-                    </button>
-                </div>
-                <p className="mt-2">
-                    Already have an account? {' '}
-                    <NavLink to="/sign_in">
-                        Sign in
-                    </NavLink>
-                </p>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+        <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar
+        />
+    </>
   )
 }
 
