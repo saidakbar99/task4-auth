@@ -3,36 +3,52 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 
 import { Context } from '../index'
+import { isValidEmail } from '../util/validator'
 
 const SignUp = () => {
     const navigate = useNavigate()
 
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [accountData, setAccountData] = useState({
+        username: '',
+        email: '',
+        password: ''
+    })
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+    const [isEmailValid, setIsEmailValid] = useState(false)
 
     const { store } = useContext(Context)
 
     const handleEnterPress = (event) => {
         if (event.key === 'Enter') {
-            handleRegister();
+            handleRegister()
         }
     }
 
     const handleRegister = async () => {
+        const { username, password, email } = accountData
         const newUser = await store.registration(username, password, email)
             .then(async () => await store.login(username, password))
 
-        if (newUser?.status === 200) {
+            console.log('>>>', newUser)
+
+        if (newUser === 200) {
             navigate('/')
         } else {
-            toast.error('This email/username is already used', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: true,
-                closeOnClick: true,
-            })
+            toast.error('This email/username is already used')
         }
+    }
+
+    const areInputsValid = () => {
+        const { username, password, email } = accountData
+        const areInputsEmpty = [username, email, password].some(field => !field.trim())
+        setIsEmailValid(isValidEmail(email))
+        setIsButtonDisabled(areInputsEmpty || !isEmailValid)
+    }
+
+    const handleOnChange = (inputName, event) => {
+        const { value } = event.target
+        setAccountData({ ...accountData, [inputName]: value });
+        areInputsValid()
     }
 
   return (
@@ -48,8 +64,9 @@ const SignUp = () => {
                             className="form-control mt-1"
                             id="username"
                             name="username"
+                            value={accountData.username}
                             placeholder="Username"
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(event) => handleOnChange('username', event)}
                             onKeyDown={handleEnterPress}
                             autoFocus
                             required
@@ -59,11 +76,14 @@ const SignUp = () => {
                         <label htmlFor='email'>Email address</label>
                         <input
                             type="email"
-                            className="form-control mt-1"
+                            className={`form-control mt-1
+                                ${isEmailValid || !accountData.email ? '' : 'border-danger'}`
+                            }
                             id="email"
                             name="email"
+                            value={accountData.email}
                             placeholder="Email address"
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(event) => handleOnChange('email', event)}
                             onKeyDown={handleEnterPress}
                             required
                         />
@@ -75,8 +95,9 @@ const SignUp = () => {
                             className="form-control mt-1"
                             id="password"
                             name="password"
+                            value={accountData.password}
                             placeholder="Password"
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(event) => handleOnChange('password', event)}
                             onKeyDown={handleEnterPress}
                             required
                         />
@@ -84,8 +105,9 @@ const SignUp = () => {
                     <div className="d-grid gap-2 mt-3">
                         <button
                             type="button"
-                            className="btn btn-primary"
+                            className={`btn ${isButtonDisabled ? 'btn-secondary' : 'btn-primary'}`}
                             onClick={handleRegister}
+                            disabled={isButtonDisabled}
                         >
                             Sign up
                         </button>

@@ -30,9 +30,10 @@ export default class Store {
             sessionStorage.setItem('token', response.data.accessToken)
             this.setAuth(true)
             this.setUser(response.data.user)
-            return response
+            return response.status
         } catch (e) {
             console.error(e.response?.data?.message)
+            return e.response?.status
         }
     }
 

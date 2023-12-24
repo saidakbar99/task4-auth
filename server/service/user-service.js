@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const UserModel = require('../models/user-model')
 const tokenService = require('./token-service')
 const UserDto = require('../dtos/user-dto')
-const ApiError = require('../exceptions/api-error');
+const ApiError = require('../exceptions/api-error')
 class UserService {
 
     async generateAndSaveToken(user) {
@@ -12,12 +12,12 @@ class UserService {
 
         return { ...tokens, user: userDto}
     }
- 
+
     async registration(username, password, email) {
         const candidate = await UserModel.findOne({ username })
 
         if (candidate) {
-            throw ApiError.BadRequest(`User with ${username} username already exist`);
+            throw ApiError.BadRequest(`User with ${username} username already exist`)
         }
 
         const hashPassword = await bcrypt.hash(password, 3)
@@ -31,11 +31,11 @@ class UserService {
         const isPassEquals = await bcrypt.compare(password, user.password)
 
         if (!user || !isPassEquals) {
-            throw ApiError.BadRequest('Wrong username/password');
+            throw ApiError.BadRequest('Wrong username/password')
         }
 
         if (user.isBlocked) {
-            throw ApiError.BadRequest('This user is blocked');
+            throw ApiError.BadRequest('This user is blocked')
         }
 
         await UserModel.findOneAndUpdate({username: username}, {lastLogin: Date.now()})

@@ -13,20 +13,20 @@ $api.interceptors.request.use((config) => {
 })
 
 $api.interceptors.response.use((config) => {
-    return config;
+    return config
 },async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config
     if (error.response.status === 401 && error.config && !error.config._isRetry) {
-        originalRequest._isRetry = true;
+        originalRequest._isRetry = true
         try {
             const response = await axios.get(`${API_URL}/refresh`, {withCredentials: true})
-            sessionStorage.setItem('token', response.data.accessToken);
-            return $api.request(originalRequest);
+            sessionStorage.setItem('token', response.data.accessToken)
+            return $api.request(originalRequest)
         } catch (e) {
             console.error('Unauthorized', e)
         }
     }
-    throw error;
+    throw error
 })
 
 export default $api

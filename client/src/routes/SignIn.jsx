@@ -13,24 +13,26 @@ const SignIn = () => {
 
     const handleEnterPress = (event) => {
         if (event.key === 'Enter') {
-            handleLogin();
+            handleLogin()
         }
     }
 
     const handleLogin = async () => {
-        const isUser = await store.login(username, password)
+        const loginStatus = await store.login(username, password)
 
-        if (isUser?.status === 200) {
-            navigate('/')
-        } else {
-            toast.error('Wrong username/password', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: true,
-                closeOnClick: true,
-            })
+        switch (loginStatus) {
+            case 200:
+                navigate('/')
+                break
+            case 400:
+                toast.error('This user is blocked')
+                break
+            default:
+                toast.error('Wrong username/password')
         }
     }
+
+    const areInputsEmpty = [username, password].some(field => !field.trim())
 
     return(
         <>
@@ -45,6 +47,7 @@ const SignIn = () => {
                                 className="form-control mt-1"
                                 id="username"
                                 name="username"
+                                value={username}
                                 placeholder="Username"
                                 onChange={(e) => setUsername(e.target.value)}
                                 onKeyDown={handleEnterPress}
@@ -59,6 +62,7 @@ const SignIn = () => {
                                 className="form-control mt-1"
                                 id="password"
                                 name="password"
+                                value={password}
                                 placeholder="Password"
                                 onChange={(e) => setPassword(e.target.value)}
                                 onKeyDown={handleEnterPress}
@@ -68,8 +72,9 @@ const SignIn = () => {
                         <div className="d-grid gap-2 mt-3">
                             <button
                                 type="button"
-                                className="btn btn-primary"
+                                className={`btn ${areInputsEmpty ? 'btn-secondary' : 'btn-primary'}`}
                                 onClick={handleLogin}
+                                disabled={areInputsEmpty}
                             >
                                 Sign in
                             </button>

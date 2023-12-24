@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react"
 
 import { Context } from "./index"
 import SignIn from "./routes/SignIn"
-import UserService from "./services/UserService";
+import UserService from "./services/UserService"
 
 const App = () => {
     const { store } = useContext(Context)
@@ -16,10 +16,10 @@ const App = () => {
 
     async function getUsers() {
         try {
-            const response = await UserService.fetchUsers();
-            setUsers(response.data);
+            const response = await UserService.fetchUsers()
+            setUsers(response.data)
         } catch (e) {
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -32,7 +32,7 @@ const App = () => {
             <div>
                 <SignIn/>
             </div>
-        );
+        )
     }
 
     return (

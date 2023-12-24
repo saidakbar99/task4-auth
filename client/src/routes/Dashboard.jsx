@@ -1,13 +1,11 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Form } from 'react-bootstrap'
-import axios from 'axios'
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react-lite"
 import moment from 'moment'
 import 'moment/locale/en-au'
 
 import { Context } from '../index'
-import UserService from "../services/UserService";
+import UserService from "../services/UserService"
 
 
 const Dashboard = () => {
@@ -16,7 +14,7 @@ const Dashboard = () => {
     const [isCheck, setIsCheck] = useState([])
 
     const navigate = useNavigate()
-    const { store } = useContext(Context);
+    const { store } = useContext(Context)
     const token = sessionStorage.getItem('token')
 
     useEffect(() => {
@@ -34,8 +32,8 @@ const Dashboard = () => {
 
     const getUsers = async () => {
         try {
-            const response = await UserService.fetchUsers(token);
-            setUsers(response.data);
+            const response = await UserService.fetchUsers(token)
+            setUsers(response.data)
             resetCheckboxes()
         } catch (e) {
             console.error('Error fetching users: ', e)
@@ -81,6 +79,11 @@ const Dashboard = () => {
         }
     }
 
+    const logout = async () => {
+        await store.logout()
+            .then(() => navigate('/'))
+    }
+
     const handleSelectAll = e => {
         setIsSelectedAll(!isSelectedAll)
         setIsCheck(users.map(user => user._id))
@@ -107,25 +110,33 @@ const Dashboard = () => {
     return (
         //! DEcompostie table
         <div className='container pt-4'>
-            <div className='d-flex mb-2 flex-row-reverse'>
+            <div className='d-flex mb-2 justify-content-between align-items-center'>
                 <button
-                    className='btn btn-outline-danger ms-2'
-                    onClick={deleteUser}
+                    className='btn btn-outline-danger py-1 ms-2'
+                    onClick={logout}
                 >
-                    <i className="bi bi-trash3"></i>
+                    Logout
                 </button>
-                <button
-                    className='btn btn-outline-secondary ms-2'
-                    onClick={blockUser}
-                >
-                    <i className="bi bi-lock"></i>
-                </button>
-                <button
-                    className='btn btn-outline-success'
-                    onClick={unblockUser}
-                >
-                    <i className="bi bi-unlock"></i>
-                </button>
+                <div className='d-flex mb-2'>
+                    <button
+                        className='btn btn-outline-success'
+                        onClick={unblockUser}
+                    >
+                        <i className="bi bi-unlock"></i>
+                    </button>
+                    <button
+                        className='btn btn-outline-secondary ms-2'
+                        onClick={blockUser}
+                    >
+                        <i className="bi bi-lock"></i>
+                    </button>
+                    <button
+                        className='btn btn-outline-danger ms-2'
+                        onClick={deleteUser}
+                    >
+                        <i className="bi bi-trash3"></i>
+                    </button>
+                </div>
             </div>
             <table className="table table-striped table-bordered">
                 <thead className='table-dark'>
