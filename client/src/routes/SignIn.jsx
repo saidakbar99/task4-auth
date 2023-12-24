@@ -1,41 +1,33 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
+
+import { Context } from '../index'
 
 const SignIn = () => {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
-    const handleLogin = async () => {
-        try {
-            //! call link
-            const response = await axios.post('http://localhost:5000/sign_in', {
-                username: username,
-                password: password
-            })
-            const { token } = response.data
+    const { store } = useContext(Context)
 
-            if (token) {
-                //! call link
-                await axios.post('http://localhost:5000/', { username: username })
-                navigate('/')
-                sessionStorage.setItem('token', token)
-            }
-            //!REFACTOR DUPLICATE in SIGN_UP
-        } catch (e) {
-            console.error('Error message: ', e)
-            //! Call it from utilities/index.js
+    const handleEnterPress = (event) => {
+        if (event.key === 'Enter') {
+            handleLogin();
+        }
+      };
+
+    const handleLogin = async () => {
+        const isUser = await store.login(username, password)
+
+        if (isUser?.status === 200) {
+            navigate('/')
+        } else {
             toast.error('Wrong username/password', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: true,
                 closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
             })
         }
     }
@@ -47,7 +39,7 @@ const SignIn = () => {
                     <div className="Auth-form-content">
                         <h3 className="Auth-form-title">Sign In</h3>
                         <div className="form-group mt-3">
-                            <label>Username</label>
+                            <label htmlFor='username'>Username</label>
                             <input
                                 type="username"
                                 className="form-control mt-1"
@@ -55,11 +47,13 @@ const SignIn = () => {
                                 name="username"
                                 placeholder="Username"
                                 onChange={(e) => setUsername(e.target.value)}
+                                onKeyDown={handleEnterPress}
+                                autoFocus
                                 required
                             />
                         </div>
                         <div className="form-group mt-3">
-                            <label>Password</label>
+                            <label htmlFor='password'>Password</label>
                             <input
                                 type="password"
                                 className="form-control mt-1"
@@ -67,6 +61,7 @@ const SignIn = () => {
                                 name="password"
                                 placeholder="Password"
                                 onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={handleEnterPress}
                                 required
                             />
                         </div>
@@ -74,9 +69,9 @@ const SignIn = () => {
                             <button
                                 type="button"
                                 className="btn btn-primary"
-                                onClick={ handleLogin }
+                                onClick={handleLogin}
                             >
-                                Submit
+                                Sign in
                             </button>
                         </div>
                         <p className="mt-2">
@@ -92,13 +87,6 @@ const SignIn = () => {
                 position="top-right"
                 autoClose={2000}
                 hideProgressBar
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss={false}
-                draggable
-                pauseOnHover={false}
-                theme="light"
             />
         </>
     )

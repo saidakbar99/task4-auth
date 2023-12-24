@@ -1,25 +1,39 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
 import axios from 'axios'
+import { observer } from "mobx-react-lite";
 import moment from 'moment'
 import 'moment/locale/en-au'
 
+import { Context } from '../index'
+import UserService from "../services/UserService";
+
+
 const Dashboard = () => {
     const [users, setUsers] = useState([])
-    const [isCheckAll, setIsCheckAll] = useState(false)
+    const [isSelectedAll, setIsSelectedAll] = useState(false)
     const [isCheck, setIsCheck] = useState([])
 
     const navigate = useNavigate()
-    const token = sessionStorage.getItem('token')
+    const { store } = useContext(Context);
+    const token = localStorage.getItem('token')
 
-    const getUsers = async (token) => {
+
+    useEffect(() => {
+        getUsers()
+
+        if (token) {
+            store.checkAuth()
+            console.log('>>>user', store.user.id)
+
+        }
+    }, [])
+
+    const getUsers = async () => {
         try {
-            //!Call link
-            const response = await axios.get('http://localhost:5000/', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            setUsers(response.data)
+            const response = await UserService.fetchUsers(token);
+            setUsers(response.data);
         } catch (e) {
             console.error('Error fetching users: ', e)
         }
@@ -27,19 +41,17 @@ const Dashboard = () => {
 
     const deleteUser = async () => {
         try {
-            //!Call link
-            await axios.post('http://localhost:5000/', { selectedIds: isCheck })
-            getUsers(token)
+            await UserService.deleteUsers(isCheck)
+            getUsers()
         } catch (error) {
-          console.error('Error removing users:', error)
+            console.error('Error removing users:', error)
         }
     }
 
     const blockUser = async () => {
         try {
-            //!Call link
-            await axios.post('http://localhost:5000/block', { selectedIds: isCheck })
-            getUsers(token)
+            await UserService.blockUsers(isCheck)
+            getUsers()
         } catch (error) {
           console.error('Error removing users:', error)
         }
@@ -47,18 +59,17 @@ const Dashboard = () => {
 
     const unblockUser = async () => {
         try {
-            //!Call link
-            await axios.post('http://localhost:5000/unblock', { selectedIds: isCheck })
-            getUsers(token)
+            await UserService.unblockUsers(isCheck)
+            getUsers()
         } catch (error) {
           console.error('Error removing users:', error)
         }
     }
 
     const handleSelectAll = e => {
-        setIsCheckAll(!isCheckAll)
+        setIsSelectedAll(!isSelectedAll)
         setIsCheck(users.map(user => user._id))
-        if (isCheckAll) {
+        if (isSelectedAll) {
           setIsCheck([])
         }
     }
@@ -77,10 +88,6 @@ const Dashboard = () => {
         }
     }, [token])
 //! REFACTOR useEffects
-//! get users calls two times
-    useEffect(() => {
-        getUsers(token)
-    }, [])
 
     return (
         //! DEcompostie table
@@ -112,7 +119,7 @@ const Dashboard = () => {
                             <input
                                 className="form-check-input"
                                 type="checkbox"
-                                checked={ isCheckAll }
+                                checked={ isSelectedAll }
                                 onChange={ handleSelectAll }
                             />
                         </th>
@@ -145,12 +152,9 @@ const Dashboard = () => {
                         </tr>
                     ))}
                 </tbody>
-                {/* <tfoot>
-                    pagination
-                </tfoot> */}
             </table>
         </div>
     )
 }
 
-export default Dashboard
+export default observer(Dashboard)

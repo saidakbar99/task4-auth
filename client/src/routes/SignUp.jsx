@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+
+import { Context } from '../index'
 
 const SignUp = () => {
     const navigate = useNavigate()
@@ -9,28 +11,30 @@ const SignUp = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const handleRegister = async () => {
-        try {
-            //! call link
-            const response = await axios.post('http://localhost:5000/sign_up', {
-                username: username,
-                password: password,
-                email: email
-                //! call link
-            }).then(async() => await axios.post('http://localhost:5000/sign_in', {
-                username: username,
-                password: password
-            }))
-            const { token } = response.data
-//! refactor DUPLICATE
-            if (token) {
-                navigate('/')
-                sessionStorage.setItem('token', token)
-            }
-        } catch (e) {
-            console.error(e)
-        }
-    }
+    const { store } = useContext(Context)
+
+//     const handleRegister = async () => {
+//         try {
+//             //! call link
+//             const response = await axios.post('http://localhost:5000/sign_up', {
+//                 username: username,
+//                 password: password,
+//                 email: email
+//                 //! call link
+//             }).then(async() => await axios.post('http://localhost:5000/sign_in', {
+//                 username: username,
+//                 password: password
+//             }))
+//             const { token } = response.data
+// //! refactor DUPLICATE
+//             if (token) {
+//                 navigate('/')
+//                 sessionStorage.setItem('token', token)
+//             }
+//         } catch (e) {
+//             console.error(e)
+//         }
+//     }
 
   return (
     <div className="Auth-form-container">
@@ -77,9 +81,9 @@ const SignUp = () => {
                     <button
                         type="button"
                         className="btn btn-primary"
-                        onClick={ handleRegister }
+                        onClick={() => store.registration(username, password, email) }
                     >
-                        Submit
+                        Sign up
                     </button>
                 </div>
                 <p className="mt-2">

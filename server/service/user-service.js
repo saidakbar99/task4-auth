@@ -40,8 +40,7 @@ class UserService {
     }
 
     async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken)
-        return token
+        return await tokenService.removeToken(refreshToken)
     }
 
     async refresh(refreshToken) {
@@ -62,8 +61,19 @@ class UserService {
     }
 
     async getAllUsers() {
-        const users = await UserModel.find()
-        return users
+        return await UserModel.find()
+    }
+
+    async delete(selectedIds) {
+        return await UserModel.deleteMany({ _id: { $in: selectedIds } })
+    }
+
+    async block(selectedIds) {
+        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {"$set":{"status": "BLOCKED"}})
+    }
+
+    async unblock(selectedIds) {
+        return await UserModel.updateMany({ _id: { $in: selectedIds } }, {"$set":{"status": "ACTIVE"}})
     }
 }
 
